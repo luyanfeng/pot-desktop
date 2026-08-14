@@ -8,7 +8,7 @@ import { BsGithub } from 'react-icons/bs';
 import { invoke } from '@tauri-apps/api/core';
 import React from 'react';
 
-import { appVersion } from '../../../../utils/env';
+import { appVersion, repoUrl } from '../../../../utils/env';
 
 export default function About() {
     const { t } = useTranslation();
@@ -40,7 +40,7 @@ export default function About() {
                         className='my-[5px]'
                         size='sm'
                         onPress={() => {
-                            open('https://github.com/pot-app/pot-desktop');
+                            open(repoUrl);
                         }}
                     >
                         {t('config.about.github')}
@@ -65,7 +65,7 @@ export default function About() {
                                     className='my-[5px]'
                                     size='sm'
                                     onPress={() => {
-                                        open('https://github.com/pot-app/pot-desktop/issues');
+                                        open(`${repoUrl}/issues`);
                                     }}
                                 >
                                     {t('config.about.issue')}
@@ -145,7 +145,7 @@ export default function About() {
                                         className='my-[5px]'
                                         size='lg'
                                         onPress={() => {
-                                            open('https://github.com/pot-app/pot-desktop/discussions');
+                                            open(`${repoUrl}/discussions`);
                                         }}
                                     >
                                         <BsGithub />

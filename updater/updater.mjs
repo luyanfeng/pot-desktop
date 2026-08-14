@@ -1,6 +1,15 @@
 import fetch from 'node-fetch';
 import fs from 'fs';
 
+// GitHub 仓库(集中配置,替换仓库时只需改这里)
+const REPO = 'luyanfeng/pot-desktop';
+const REPO_URL = `https://github.com/${REPO}`;
+const REPO_API = `https://api.github.com/repos/${REPO}`;
+// 发布下载 CDN 前缀(如 dl.pot-app.com 加速镜像;留空则直连 GitHub)
+const CDN_PREFIX = '';
+
+const downloadUrl = (path) => `${CDN_PREFIX}${REPO_URL}/releases/download/${path}`;
+
 async function resolveUpdater() {
     if (process.env.GITHUB_TOKEN === undefined) {
         throw new Error('GITHUB_TOKEN is required');
@@ -10,18 +19,18 @@ async function resolveUpdater() {
     let version = await getVersion(TOKEN);
     let changelog = await getChangeLog(TOKEN);
 
-    const darwin_aarch64 = `https://dl.pot-app.com/https://github.com/pot-app/pot-desktop/releases/download/${version}/pot_${version}_aarch64.app.tar.gz`;
-    const darwin_aarch64_sig = await getSignature(`https://github.com/pot-app/pot-desktop/releases/download/${version}/pot_${version}_aarch64.app.tar.gz.sig`);
-    const darwin_x86_64 = `https://dl.pot-app.com/https://github.com/pot-app/pot-desktop/releases/download/${version}/pot_${version}_x64.app.tar.gz`;
-    const darwin_x86_64_sig = await getSignature(`https://github.com/pot-app/pot-desktop/releases/download/${version}/pot_${version}_x64.app.tar.gz.sig`);
-    const windows_x86_64 = `https://dl.pot-app.com/https://github.com/pot-app/pot-desktop/releases/download/${version}/pot_${version}_x64-setup.nsis.zip`;
-    const windows_x86_64_sig = await getSignature(`https://github.com/pot-app/pot-desktop/releases/download/${version}/pot_${version}_x64-setup.nsis.zip.sig`);
-    const windows_i686 = `https://dl.pot-app.com/https://github.com/pot-app/pot-desktop/releases/download/${version}/pot_${version}_x86-setup.nsis.zip`;
-    const windows_i686_sig = await getSignature(`https://github.com/pot-app/pot-desktop/releases/download/${version}/pot_${version}_x86-setup.nsis.zip.sig`);
-    const windows_aarch64 = `https://dl.pot-app.com/https://github.com/pot-app/pot-desktop/releases/download/${version}/pot_${version}_arm64-setup.nsis.zip`;
-    const windows_aarch64_sig = await getSignature(`https://github.com/pot-app/pot-desktop/releases/download/${version}/pot_${version}_arm64-setup.nsis.zip.sig`);
-    const linux_x86_64 = `https://dl.pot-app.com/https://github.com/pot-app/pot-desktop/releases/download/${version}/pot_${version}_amd64.AppImage.tar.gz`;
-    const linux_x86_64_sig = await getSignature(`https://github.com/pot-app/pot-desktop/releases/download/${version}/pot_${version}_amd64.AppImage.tar.gz.sig`);
+    const darwin_aarch64 = downloadUrl(`${version}/pot_${version}_aarch64.app.tar.gz`);
+    const darwin_aarch64_sig = await getSignature(`${REPO_URL}/releases/download/${version}/pot_${version}_aarch64.app.tar.gz.sig`);
+    const darwin_x86_64 = downloadUrl(`${version}/pot_${version}_x64.app.tar.gz`);
+    const darwin_x86_64_sig = await getSignature(`${REPO_URL}/releases/download/${version}/pot_${version}_x64.app.tar.gz.sig`);
+    const windows_x86_64 = downloadUrl(`${version}/pot_${version}_x64-setup.nsis.zip`);
+    const windows_x86_64_sig = await getSignature(`${REPO_URL}/releases/download/${version}/pot_${version}_x64-setup.nsis.zip.sig`);
+    const windows_i686 = downloadUrl(`${version}/pot_${version}_x86-setup.nsis.zip`);
+    const windows_i686_sig = await getSignature(`${REPO_URL}/releases/download/${version}/pot_${version}_x86-setup.nsis.zip.sig`);
+    const windows_aarch64 = downloadUrl(`${version}/pot_${version}_arm64-setup.nsis.zip`);
+    const windows_aarch64_sig = await getSignature(`${REPO_URL}/releases/download/${version}/pot_${version}_arm64-setup.nsis.zip.sig`);
+    const linux_x86_64 = downloadUrl(`${version}/pot_${version}_amd64.AppImage.tar.gz`);
+    const linux_x86_64_sig = await getSignature(`${REPO_URL}/releases/download/${version}/pot_${version}_amd64.AppImage.tar.gz.sig`);
 
     let updateData = {
         name: version,
@@ -45,7 +54,7 @@ async function resolveUpdater() {
 }
 
 async function getVersion(token) {
-    const res = await fetch('https://api.github.com/repos/pot-app/pot-desktop/releases/latest', {
+    const res = await fetch(`${REPO_API}/releases/latest`, {
         method: 'GET',
         headers: {
             Authorization: `Bearer ${token}`,
@@ -61,7 +70,7 @@ async function getVersion(token) {
 }
 
 async function getChangeLog(token) {
-    const res = await fetch('https://api.github.com/repos/pot-app/pot-desktop/releases/latest', {
+    const res = await fetch(`${REPO_API}/releases/latest`, {
         method: 'GET',
         headers: {
             Authorization: `Bearer ${token}`,
