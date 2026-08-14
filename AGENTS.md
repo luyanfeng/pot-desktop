@@ -14,7 +14,7 @@ Pot: cross-platform selection-translation / OCR desktop app. Tauri 2 (migrated f
 ## Versioning quirk (do not hand-edit casually)
 
 - `package.json` and `src-tauri/tauri.conf.json` say `3.0.7`; `src-tauri/Cargo.toml` says `0.0.0`. This is intentional: `.github/workflows/package.yml` rewrites all three from `git describe --tags` on release. Do not "fix" the mismatch.
-- `tauri.conf.json` `plugins.updater.pubkey` must stay in sync with the signing key used in CI (`TAURI_PRIVATE_KEY` secrets).
+- `tauri.conf.json` `plugins.updater.pubkey` must stay in sync with the signing key used in CI (`TAURI_PRIVATE_KEY` secrets). **pubkey is maintained in ONE place only** (`tauri.conf.json` `plugins.updater.pubkey`) — do not duplicate it in platform conf files (`webview.*.json` are v2-format overrides with only `bundle.windows` fixedRuntime config, no pubkey; they deep-merge into the main config, so updater settings come from `plugins.updater`).
 - Rust tauri stack: `tauri 2.11.5` + `tauri-runtime-wry 2.11.4` + `wry 0.55`(依赖经 `cargo update` 全量解析,与 npm 的 `@tauri-apps/api@2.11.x` 对齐)。**注意 Tauri 要求 Rust crate 与 npm 包的 minor 版本一致**,否则报 "Found version mismatched Tauri packages" 且 IPC 异常(窗口/托盘失灵)。不要单独 `cargo update -p <crate> --precise` 偏离这套矩阵。
 - `zbus` must stay on 5.15+ (5.12.0 has a broken `#[interface]` macro that fails with `DispatchResult2` not found); currently 5.19.
 - Linux 编译还需 `libssl-dev`(openssl-sys 依赖)。
