@@ -218,7 +218,7 @@ async function createDir(token, drive_id) {
         body: JSON.stringify({
             drive_id,
             parent_file_id: 'root',
-            name: 'pot-app',
+            name: 'newpot',
             type: 'folder',
             check_name_mode: 'refuse',
         }),
@@ -284,7 +284,7 @@ async function getFileByPath(token, drive_id, name) {
         },
         body: JSON.stringify({
             drive_id,
-            file_path: `/pot-app/${name}`,
+            file_path: `/newpot/${name}`,
         }),
     });
     if (res.ok) {

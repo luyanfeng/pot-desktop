@@ -3,7 +3,6 @@ import { appLogDir, appConfigDir } from '@tauri-apps/api/path';
 import { useTranslation } from 'react-i18next';
 import { open } from '@tauri-apps/plugin-shell';
 import { BsTencentQq } from 'react-icons/bs';
-import { BsTelegram } from 'react-icons/bs';
 import { BsGithub } from 'react-icons/bs';
 import { invoke } from '@tauri-apps/api/core';
 import React from 'react';
@@ -25,16 +24,6 @@ export default function About() {
                 <p className='text-center text-sm text-gray-500 mb-[5px]'>{appVersion}</p>
                 <Divider />
                 <div className='flex justify-between'>
-                    <Button
-                        variant='light'
-                        className='my-[5px]'
-                        size='sm'
-                        onPress={() => {
-                            open('https://pot-app.com');
-                        }}
-                    >
-                        {t('config.about.website')}
-                    </Button>
                     <Button
                         variant='light'
                         className='my-[5px]'
@@ -110,32 +99,6 @@ export default function About() {
                                         }}
                                     >
                                         <BsTencentQq />
-                                    </Button>
-                                </Tooltip>
-                                <Tooltip content={t('config.about.qq_group')}>
-                                    <Button
-                                        isIconOnly
-                                        variant='light'
-                                        className='my-[5px]'
-                                        size='lg'
-                                        onPress={() => {
-                                            open('https://pot-app.com/img/qq_group.png');
-                                        }}
-                                    >
-                                        <BsTencentQq />
-                                    </Button>
-                                </Tooltip>
-                                <Tooltip content={t('config.about.telegram')}>
-                                    <Button
-                                        isIconOnly
-                                        variant='light'
-                                        className='my-[5px]'
-                                        size='lg'
-                                        onPress={() => {
-                                            open('https://t.me/pot_app');
-                                        }}
-                                    >
-                                        <BsTelegram />
                                     </Button>
                                 </Tooltip>
                                 <Tooltip content={t('config.about.discussion')}>

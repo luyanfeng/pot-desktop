@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-    <id>com.pot_app.pot</id>
+    <id>com.newpot.desktop</id>
     <name>Pot</name>
     <summary>A text translation and OCR app</summary>
     <summary xml:lang="zh-Hans">一款跨平台的划词翻译和文字识别软件</summary>
-    <developer id="com.pot_app">
-        <name>Pylogmon</name>
+    <developer id="com.newpot">
+        <name>NewPot</name>
     </developer>
-    <url type="homepage">https://pot-app.com/</url>
-    <url type="bugtracker">https://github.com/pot-app/pot-desktop/issues</url>
+    <url type="homepage">https://github.com/luyanfeng/pot-desktop</url>
+    <url type="bugtracker">https://github.com/luyanfeng/pot-desktop/issues</url>
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0-only</project_license>
     <description>
@@ -37,24 +37,24 @@
             <li xml:lang="zh-Hans">多语言支持</li>
         </ul>
     </description>
-    <launchable type="desktop-id">com.pot_app.pot.desktop</launchable>
+    <launchable type="desktop-id">com.newpot.desktop</launchable>
     <screenshots>
         <screenshot type="default">
-            <image>https://github.com/pot-app/pot-desktop/raw/2.7.10/asset/1.png</image>
+            <image>https://github.com/luyanfeng/pot-desktop/raw/master/asset/1.png</image>
             <caption>Dark Mode</caption>
         </screenshot>
         <screenshot>
-            <image>https://github.com/pot-app/pot-desktop/raw/2.7.10/asset/2.png</image>
+            <image>https://github.com/luyanfeng/pot-desktop/raw/master/asset/2.png</image>
             <caption>Dark/Light Mode</caption>
         </screenshot>
         <screenshot>
-            <image>https://github.com/pot-app/pot-desktop/raw/2.7.10/asset/3.png</image>
+            <image>https://github.com/luyanfeng/pot-desktop/raw/master/asset/3.png</image>
             <caption>Light Mode</caption>
         </screenshot>
     </screenshots>
     <releases>
         <release version="3.0.7" date="2025-5-10">
-            <url type="details">https://github.com/pot-app/pot-desktop/releases/tag/3.0.7</url>
+            <url type="details">https://github.com/luyanfeng/pot-desktop/releases/tag/3.0.7</url>
             <description>
                 <p>New feature:</p>
                 <ul>
@@ -68,7 +68,7 @@
             </description>
         </release>
         <release version="3.0.6" date="2024-10-29">
-            <url type="details">https://github.com/pot-app/pot-desktop/releases/tag/3.0.6</url>
+            <url type="details">https://github.com/luyanfeng/pot-desktop/releases/tag/3.0.6</url>
             <description>
                 <p>New feature:</p>
                 <ul>
@@ -83,7 +83,7 @@
             </description>
         </release>
         <release version="3.0.5" date="2024-06-27">
-            <url type="details">https://github.com/pot-app/pot-desktop/releases/tag/3.0.5</url>
+            <url type="details">https://github.com/luyanfeng/pot-desktop/releases/tag/3.0.5</url>
             <description>
                 <p>Break Change:</p>
                 <ul>
@@ -107,7 +107,7 @@
             </description>
         </release>
         <release version="3.0.4" date="2024-06-26">
-            <url type="details">https://github.com/pot-app/pot-desktop/releases/tag/3.0.4</url>
+            <url type="details">https://github.com/luyanfeng/pot-desktop/releases/tag/3.0.4</url>
             <description>
                 <p>Break Change:</p>
                 <ul>
@@ -130,7 +130,7 @@
             </description>
         </release>
         <release version="3.0.3" date="2024-06-26">
-            <url type="details">https://github.com/pot-app/pot-desktop/releases/tag/3.0.3</url>
+            <url type="details">https://github.com/luyanfeng/pot-desktop/releases/tag/3.0.3</url>
             <description>
                 <p>Break Change:</p>
                 <ul>
@@ -152,7 +152,7 @@
             </description>
         </release>
         <release version="3.0.2" date="2024-06-24">
-            <url type="details">https://github.com/pot-app/pot-desktop/releases/tag/3.0.2</url>
+            <url type="details">https://github.com/luyanfeng/pot-desktop/releases/tag/3.0.2</url>
             <description>
                 <p>Break Change:</p>
                 <ul>
@@ -173,7 +173,7 @@
             </description>
         </release>
         <release version="3.0.1" date="2024-06-24">
-            <url type="details">https://github.com/pot-app/pot-desktop/releases/tag/3.0.1</url>
+            <url type="details">https://github.com/luyanfeng/pot-desktop/releases/tag/3.0.1</url>
             <description>
                 <p>Break Change:</p>
                 <ul>
@@ -193,7 +193,7 @@
             </description>
         </release>
         <release version="3.0.0" date="2024-06-23">
-            <url type="details">https://github.com/pot-app/pot-desktop/releases/tag/3.0.0</url>
+            <url type="details">https://github.com/luyanfeng/pot-desktop/releases/tag/3.0.0</url>
             <description>
                 <p>New feature:</p>
                 <ul>
@@ -203,7 +203,7 @@
             </description>
         </release>
         <release version="2.7.10" date="2024-04-14">
-            <url type="details">https://github.com/pot-app/pot-desktop/releases/tag/2.7.10</url>
+            <url type="details">https://github.com/luyanfeng/pot-desktop/releases/tag/2.7.10</url>
             <description>
                 <p>Break Change:</p>
                 <ul>
@@ -218,7 +218,7 @@
             </description>
         </release>
         <release version="2.7.9" date="2024-03-02">
-            <url type="details">https://github.com/pot-app/pot-desktop/releases/tag/2.7.9</url>
+            <url type="details">https://github.com/luyanfeng/pot-desktop/releases/tag/2.7.9</url>
             <description>
                 <p>Break Change:</p>
                 <ul>

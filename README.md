@@ -1,5 +1,7 @@
 <img width="200px" src="public/icon.svg" align="left"/>
 
+> Forked from [pot-app/pot-desktop](https://github.com/pot-app/pot-desktop)
+
 # Pot (派了个萌的翻译器)
 
 > 🌈 一个跨平台的划词翻译软件 ([QQ 频道](https://pd.qq.com/s/akns94e1r))
@@ -15,8 +17,6 @@
 <br/>
 <hr/>
 <div align="center">
-
-<h3>中文 | <a href='./README_EN.md'>English</a> | <a href='./README_KR.md'> 한글 </a></h3>
 
 <table>
 <tr>
@@ -37,7 +37,6 @@
 -   [外部调用](#外部调用)
 -   [Wayland 支持](#wayland-支持)
 -   [国际化](#国际化weblate)
--   [贡献者](#贡献者)
 -   [感谢](#感谢)
 
 <div align="center">
@@ -407,21 +406,13 @@ windowrulev2 = move cursor 0 0, class:(pot), title:(Translator|PopClip|Screensho
 
 </div>
 
-<div align="center">
-
-# 贡献者
-
-</div>
-
-<img src="https://github.com/pot-app/.github/blob/master/pot-desktop-contributions.svg?raw=true" width="100%"/>
-
 ## 手动编译
 
 ### 环境要求
 
-Node.js >= 18.0.0
+Node.js >= 22.13.0
 
-pnpm >= 8.5.0
+pnpm >= 9.0.0
 
 Rust >= 1.80.0
 
@@ -430,7 +421,7 @@ Rust >= 1.80.0
 1. Clone 仓库
 
     ```bash
-    git clone https://github.com/pot-app/pot-desktop.git
+    git clone https://github.com/luyanfeng/pot-desktop.git
     ```
 
 2. 安装依赖
@@ -443,7 +434,7 @@ Rust >= 1.80.0
 3. 安装依赖(仅 Linux 需要)
 
     ```bash
-    sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev patchelf libxdo-dev libxcb1 libxrandr2 libdbus-1-3
+    sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf libxdo-dev libxcb1 libxrandr2 libdbus-1-3 libssl-dev
     ```
 
 4. 开发调试

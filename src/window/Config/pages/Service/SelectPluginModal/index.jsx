@@ -1,6 +1,5 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@nextui-org/react';
 import { remove, BaseDirectory } from '@tauri-apps/plugin-fs';
-import { open as openInBrowser } from '@tauri-apps/plugin-shell';
 import toast, { Toaster } from 'react-hot-toast';
 import { MdDeleteOutline } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
@@ -34,9 +33,7 @@ export default function SelectPluginModal(props) {
                                 <Button
                                     fullWidth
                                     variant='flat'
-                                    onPress={() => {
-                                        openInBrowser('http://pot-app.com/plugin.html');
-                                    }}
+                                    isDisabled
                                 >
                                     <div className='w-full'>{t('config.service.view_plugin_list')}</div>
                                 </Button>

@@ -51,7 +51,7 @@
   "productName": "pot",
   "mainBinaryName": "pot",
   "version": "4.0.0-ubuntu2404",
-  "identifier": "com.pot-app.desktop",
+  "identifier": "com.newpot.desktop",
   "plugins": {
     "updater": {
       "endpoints": [
