@@ -4,7 +4,7 @@
 
 # Pot (派了个萌的翻译器)
 
-> 🌈 一个跨平台的划词翻译软件 ([QQ 频道](https://pd.qq.com/s/akns94e1r))
+> 🌈 一个跨平台的划词翻译软件
 
 ![License](https://img.shields.io/github/license/pot-app/pot-desktop.svg)
 ![Tauri](https://img.shields.io/badge/Tauri-1.6.8-blue?logo=tauri)
