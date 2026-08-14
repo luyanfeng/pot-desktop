@@ -10,17 +10,17 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.5", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
 
-tauri = { version = "1.8", features = [ "dialog-save", "dialog-open", "fs-all", "protocol-asset", "shell-all", "clipboard-all", "os-all", "http-all", "http-multipart", "updater", "notification-all", "global-shortcut-all", "window-all", "path-all", "system-tray", "devtools"] }
-tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-tauri-plugin-autostart = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-tauri-plugin-fs-watch = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-tauri-plugin-sql = { git= "https://github.com/tauri-apps/plugins-workspace", branch = "v1",features = ["sqlite"] }
+tauri = { version = "2", features = [ "protocol-asset", "devtools", "tray-icon"] }
+tauri-plugin-single-instance = { version = "2" }
+tauri-plugin-autostart = { version = "2" }
+tauri-plugin-fs = { version = "2", features = ["watch"] }
+tauri-plugin-store = { version = "2" }
+tauri-plugin-log = { version = "2" }
+tauri-plugin-sql = {features = ["sqlite"] , version = "2" }
 serde = { version = "1.0", features = ["derive"] }
 selection = "1.2.0"
 serde_json = "1.0"
@@ -40,6 +40,15 @@ walkdir = "2.5"
 thiserror = "1.0"
 font-kit = "0.14.2"
 image = "0.25.4"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-http = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-clipboard-manager = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-os = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-opener = "2"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 macos-accessibility-client = "0.0.1"
@@ -50,6 +59,8 @@ windows = {version="0.58.0",features= ["Win32_UI_WindowsAndMessaging", "Win32_Fo
 window-shadows = "0.2"
 
 [target.'cfg(target_os = "linux")'.dependencies]
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 #openssl
 
 [features]

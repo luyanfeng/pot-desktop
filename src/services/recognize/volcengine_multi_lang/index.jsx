@@ -1,4 +1,4 @@
-import { fetch, Body } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 import CryptoJS from 'crypto-js';
 
 export async function recognize(base64, language, options = {}) {
@@ -14,7 +14,7 @@ export async function recognize(base64, language, options = {}) {
 async function multi_lang_ocr(img_base64, appid, secret) {
     let res = await query(img_base64, 'MultiLanguageOCR', '2022-08-31', appid, secret);
     if (res.ok) {
-        let result = res.data;
+        let result = await res.json();
         if (result['data']) {
             let data = result['data'];
             var texts = '';
@@ -24,7 +24,7 @@ async function multi_lang_ocr(img_base64, appid, secret) {
             return texts;
         }
     } else {
-        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(await res.text())}`;
     }
 }
 
@@ -134,7 +134,7 @@ async function query(img_base64, action, serviceVersion, appid, secret) {
     let res = await fetch(url, {
         method: method,
         headers: headers,
-        body: Body.text(body),
+        body: body,
     });
     return res;
 }

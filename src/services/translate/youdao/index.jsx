@@ -1,4 +1,4 @@
-import { fetch } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 import CryptoJS from 'crypto-js';
 import { nanoid } from 'nanoid';
 
@@ -14,39 +14,43 @@ export async function translate(text, from, to, options = {}) {
     const str1 = appkey + truncate(text) + salt + curtime + key;
     const sign = CryptoJS.SHA256(str1).toString(CryptoJS.enc.Hex);
 
-    let res = await fetch(url, {
-        method: 'GET',
-        query: {
-            q: text,
-            from: from,
-            to: to,
-            appKey: appkey,
-            salt: salt,
-            sign: sign,
-            signType: 'v3',
-            curtime: curtime,
-        },
-    });
+    let res = await fetch(
+        url +
+            '?' +
+            new URLSearchParams({
+                q: text,
+                from: from,
+                to: to,
+                appKey: appkey,
+                salt: salt,
+                sign: sign,
+                signType: 'v3',
+                curtime: curtime,
+            }).toString(),
+        {
+            method: 'GET',
+        }
+    );
     if (res.ok) {
-        let result = res.data;
+        let result = await res.json();
         if (result['isWord']) {
             let target = { pronunciations: [], explanations: [], associations: [], sentence: [] };
             let basic = result['basic'];
 
             if (basic['uk-phonetic']) {
-                let speech = await fetch(basic['uk-speech'], { method: 'GET', responseType: 3 });
+                let speech = await fetch(basic['uk-speech'], { method: 'GET' });
                 target['pronunciations'].push({
                     region: 'UK',
                     symbol: basic['uk-phonetic'],
-                    voice: speech.ok ? speech.data : '',
+                    voice: speech.ok ? await speech.text() : '',
                 });
             }
             if (basic['us-phonetic']) {
-                let speech = await fetch(basic['us-speech'], { method: 'GET', responseType: 3 });
+                let speech = await fetch(basic['us-speech'], { method: 'GET' });
                 target['pronunciations'].push({
                     region: 'US',
                     symbol: basic['us-phonetic'],
-                    voice: speech.ok ? speech.data : '',
+                    voice: speech.ok ? await speech.text() : '',
                 });
             }
             if (basic['phonetic'] && target['pronunciations'].length === 0) {
@@ -89,7 +93,7 @@ export async function translate(text, from, to, options = {}) {
             }
         }
     } else {
-        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+        throw `Http Request Error\nHttp Status: ${res.status}\n${await res.text()}`;
     }
 }
 

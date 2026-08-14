@@ -1,4 +1,4 @@
-import { fetch } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 import CryptoJS from 'crypto-js';
 
 export async function recognize(base64, language, options = {}) {
@@ -47,13 +47,13 @@ export async function recognize(base64, language, options = {}) {
     let res = await fetch(request_url, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: { type: 'Text', payload: JSON.stringify(request_body) },
+        body: JSON.stringify(request_body),
     });
 
     if (!res.ok) {
-        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+        throw `Http Request Error\nHttp Status: ${res.status}\n${await res.text()}`;
     }
-    let data = res['data'];
+    let data = await res.json();
     if (!data) {
         throw `Result data not found\nResult:\n${JSON.stringify(res)}`;
     }

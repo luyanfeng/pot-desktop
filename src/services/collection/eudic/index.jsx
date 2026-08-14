@@ -1,4 +1,4 @@
-import { fetch, Body } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 
 export async function collection(source, target, options = {}) {
     const { config } = options;
@@ -10,18 +10,20 @@ export async function collection(source, target, options = {}) {
 }
 
 async function checkCategory(name, token) {
-    let res = await fetch('https://api.frdic.com/api/open/v1/studylist/category', {
-        method: 'GET',
-        query: {
+    let res = await fetch(
+        `https://api.frdic.com/api/open/v1/studylist/category?${new URLSearchParams({
             language: 'en',
-        },
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-        },
-    });
+        })}`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token,
+            },
+        }
+    );
 
-    let result = res.data;
+    let result = await res.json();
     if (result.data) {
         for (let i of result.data) {
             if (i.name === name) {
@@ -35,12 +37,12 @@ async function checkCategory(name, token) {
                 'Content-Type': 'application/json',
                 Authorization: token,
             },
-            body: Body.json({
+            body: JSON.stringify({
                 language: 'en',
                 name: name,
             }),
         });
-        let result1 = res1.data;
+        let result1 = await res1.json();
         if (result1.data) {
             return result1.data.id;
         } else {
@@ -58,13 +60,13 @@ async function addWordToCategory(id, word, token) {
             'Content-Type': 'application/json',
             Authorization: token,
         },
-        body: Body.json({
+        body: JSON.stringify({
             id: id,
             language: 'en',
             words: [word],
         }),
     });
-    let result = res.data;
+    let result = await res.json();
     return result.message;
 }
 

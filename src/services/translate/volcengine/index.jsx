@@ -1,4 +1,4 @@
-import { fetch } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 import CryptoJS from 'crypto-js';
 
 export async function translate(text, from, to, options = {}) {
@@ -109,11 +109,11 @@ export async function translate(text, from, to, options = {}) {
     let res = await fetch(url, {
         method: method,
         headers: headers,
-        body: { type: 'Text', payload: bodyStr },
+        body: bodyStr,
     });
 
     if (res.ok) {
-        let result = res.data;
+        let result = await res.json();
         // 整理翻译结果并返回
         let translations = '';
         let { TranslationList } = result;
@@ -135,7 +135,7 @@ export async function translate(text, from, to, options = {}) {
             throw JSON.stringify(result);
         }
     } else {
-        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+        throw `Http Request Error\nHttp Status: ${res.status}\n${await res.text()}`;
     }
 }
 

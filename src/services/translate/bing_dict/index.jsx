@@ -1,4 +1,4 @@
-import { fetch } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 const DISPLAY_FORMAT_DEFAULT = '发音, 快速释义, 变形';
 
 export async function translate(text, from, to) {
@@ -21,7 +21,7 @@ export async function translate(text, from, to) {
         `https://www.bing.com/api/v6/dictionarywords/search?q=${text}&appid=371E7B2AF0F9B84EC491D731DF90A55719C7D209&mkt=zh-cn&pname=bingdict`
     );
     if (res.ok) {
-        const result = res.data;
+        const result = await res.json();
         const meaningGroups = result.value[0].meaningGroups;
         if (meaningGroups.length === 0) {
             throw `Words not yet included: ${text}`;
@@ -63,7 +63,7 @@ export async function translate(text, from, to) {
         }
         return target;
     } else {
-        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+        throw `Http Request Error\nHttp Status: ${res.status}\n${await res.text()}`;
     }
 }
 

@@ -27,9 +27,9 @@ use screenshot::screenshot;
 use server::*;
 use std::sync::Mutex;
 use system_ocr::*;
-use tauri::api::notification::Notification;
 use tauri::Manager;
-use tauri_plugin_log::LogTarget;
+use tauri_plugin_log::{Target, TargetKind};
+use tauri_plugin_notification::NotificationExt;
 use tray::*;
 use updater::check_update;
 use window::config_window;
@@ -44,16 +44,27 @@ pub struct StringWrapper(pub Mutex<String>);
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _, cwd| {
-            Notification::new(&app.config().tauri.bundle.identifier)
+            let _ = app
+                .notification()
+                .builder()
                 .title("The program is already running. Please do not start it again!")
                 .body(cwd)
-                .icon("pot")
-                .show()
-                .unwrap();
+                .show();
         }))
         .plugin(
             tauri_plugin_log::Builder::default()
-                .targets([LogTarget::LogDir, LogTarget::Stdout])
+                .targets([
+                    Target::new(TargetKind::LogDir { file_name: None }),
+                    Target::new(TargetKind::Stdout),
+                ])
+                .level(log::LevelFilter::Info)
+                .level_for("notify", log::LevelFilter::Warn)
+                .level_for("notify_debouncer_full", log::LevelFilter::Warn)
+                .level_for("hyper", log::LevelFilter::Warn)
+                .level_for("hyper_util", log::LevelFilter::Warn)
+                .level_for("reqwest", log::LevelFilter::Warn)
+                .level_for("tracing", log::LevelFilter::Warn)
+                .level_for("rustls", log::LevelFilter::Warn)
                 .build(),
         )
         .plugin(tauri_plugin_autostart::init(
@@ -62,8 +73,22 @@ fn main() {
         ))
         .plugin(tauri_plugin_sql::Builder::default().build())
         .plugin(tauri_plugin_store::Builder::default().build())
-        .plugin(tauri_plugin_fs_watch::init())
-        .system_tray(tauri::SystemTray::new())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_os::init())
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(|app, shortcut, event| {
+                    handle_shortcut_event(app, shortcut, event);
+                })
+                .build(),
+        )
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             info!("============== Start App ==============");
             #[cfg(target_os = "macos")]
@@ -74,7 +99,7 @@ fn main() {
                 info!("MacOS Accessibility Trusted: {}", trusted);
             }
             // Global AppHandle
-            APP.get_or_init(|| app.handle());
+            APP.get_or_init(|| app.handle().clone());
             // Init Config
             info!("Init Config Store");
             init_config(app);
@@ -85,19 +110,23 @@ fn main() {
                 config_window();
             }
             app.manage(StringWrapper(Mutex::new("".to_string())));
+            // Init Tray
+            let _ = init_tray(app.app_handle());
             // Update Tray Menu
-            update_tray(app.app_handle(), "".to_string(), "".to_string());
+            update_tray(app.app_handle().clone(), "".to_string(), "".to_string());
             // Start http server
             start_server();
             // Register Global Shortcut
             match register_shortcut("all") {
                 Ok(()) => {}
-                Err(e) => Notification::new(app.config().tauri.bundle.identifier.clone())
-                    .title("Failed to register global shortcut")
-                    .body(&e)
-                    .icon("pot")
-                    .show()
-                    .unwrap(),
+                Err(e) => {
+                    let _ = app
+                        .notification()
+                        .builder()
+                        .title("Failed to register global shortcut")
+                        .body(e)
+                        .show();
+                }
             }
             match get("proxy_enable") {
                 Some(v) => {
@@ -108,7 +137,7 @@ fn main() {
                 None => {}
             }
             // Check Update
-            check_update(app.handle());
+            check_update(app.handle().clone());
             if let Some(engine) = get("translate_detect_engine") {
                 if engine.as_str().unwrap() == "local" {
                     init_lang_detect();
@@ -124,7 +153,7 @@ fn main() {
             app.manage(ClipboardMonitorEnableWrapper(Mutex::new(
                 clipboard_monitor.to_string(),
             )));
-            start_clipboard_monitor(app.handle());
+            start_clipboard_monitor(app.handle().clone());
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -149,13 +178,14 @@ fn main() {
             font_list,
             aliyun
         ])
-        .on_system_tray_event(tray_event_handler)
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
-        // 窗口关闭不退出
+        // 窗口关闭不退出(托盘退出菜单用 app.exit(0),带 code,放行)
         .run(|_app_handle, event| {
-            if let tauri::RunEvent::ExitRequested { api, .. } = event {
-                api.prevent_exit();
+            if let tauri::RunEvent::ExitRequested { api, code, .. } = event {
+                if code.is_none() {
+                    api.prevent_exit();
+                }
             }
         });
 }

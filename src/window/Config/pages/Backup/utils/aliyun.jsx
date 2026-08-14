@@ -1,5 +1,5 @@
-import { invoke } from '@tauri-apps/api';
-import { Body, fetch } from '@tauri-apps/api/http';
+import { invoke } from '@tauri-apps/api/core';
+import { fetch } from '@tauri-apps/plugin-http';
 import { appConfigDir, join } from '@tauri-apps/api/path';
 
 export async function backup(token, name) {
@@ -18,7 +18,7 @@ export async function backup(token, name) {
         headers: {
             Authorization: `Bearer ${token}`,
         },
-        body: Body.json({
+        body: JSON.stringify({
             drive_id,
             file_id,
             upload_id,
@@ -34,7 +34,7 @@ export async function list(token) {
         headers: {
             Authorization: `Bearer ${token}`,
         },
-        body: Body.json({
+        body: JSON.stringify({
             drive_id,
             parent_file_id: dir_id,
             type: 'file',
@@ -42,7 +42,7 @@ export async function list(token) {
         }),
     });
     if (res.ok) {
-        const result = res.data;
+        const result = await res.json();
         if (result['items']) {
             return result['items'].map((item) => {
                 return item['name'];
@@ -51,7 +51,7 @@ export async function list(token) {
             throw new Error(`Get File List Error: ${JSON.stringify(result)}`);
         }
     } else {
-        const result = res.data;
+        const result = await res.json();
         if (result['message']) {
             throw new Error(result['message']);
         } else {
@@ -75,7 +75,7 @@ export async function remove(token, name) {
         headers: {
             Authorization: `Bearer ${token}`,
         },
-        body: Body.json({
+        body: JSON.stringify({
             drive_id,
             file_id,
         }),
@@ -83,7 +83,7 @@ export async function remove(token, name) {
     if (res.ok) {
         return;
     } else {
-        const result = res.data;
+        const result = await res.json();
         if (result['message']) {
             throw new Error(result['message']);
         } else {
@@ -95,20 +95,20 @@ export async function remove(token, name) {
 export async function qrcode() {
     const res = await fetch('https://openapi.alipan.com/oauth/authorize/qrcode', {
         method: 'POST',
-        body: Body.json({
+        body: JSON.stringify({
             client_id: 'bf56dd2dc03a4d3489e3dda05dd6d466',
             scopes: ['user:base', 'file:all:read', 'file:all:write'],
         }),
     });
     if (res.ok) {
-        const result = res.data;
+        const result = await res.json();
         if (result['qrCodeUrl'] && result['sid']) {
             return { url: result['qrCodeUrl'], sid: result['sid'] };
         } else {
             throw new Error(`Can not find qrCodeUrl: ${JSON.stringify(result)}`);
         }
     } else {
-        const result = res.data;
+        const result = await res.json();
         if (result['message']) {
             throw new Error(result['message']);
         } else {
@@ -121,14 +121,14 @@ export async function status(sid) {
     const res = await fetch(`https://openapi.alipan.com/oauth/qrcode/${sid}/status`);
 
     if (res.ok) {
-        const result = res.data;
+        const result = await res.json();
         if (result['status']) {
             return { status: result['status'], code: result['authCode'] };
         } else {
             throw new Error(`Can not find status: ${JSON.stringify(result)}`);
         }
     } else {
-        const result = res.data;
+        const result = await res.json();
         if (result['message']) {
             throw new Error(result['message']);
         } else {
@@ -144,14 +144,14 @@ export async function userInfo(token) {
         },
     });
     if (res.ok) {
-        const result = res.data;
+        const result = await res.json();
         if (result.hasOwnProperty('avatar') && result.hasOwnProperty('name')) {
             return { avatar: result['avatar'], name: result['name'] };
         } else {
             throw new Error(`Can not find avatar or name: ${JSON.stringify(result)}`);
         }
     } else {
-        const result = res.data;
+        const result = await res.json();
         if (result['message']) {
             throw new Error(result['message']);
         } else {
@@ -163,20 +163,20 @@ export async function userInfo(token) {
 export async function accessToken(code) {
     const res = await fetch('https://pot-app.com/api/ali_access_token', {
         method: 'POST',
-        body: Body.json({
+        body: JSON.stringify({
             code,
             refresh_token: '',
         }),
     });
     if (res.ok) {
-        const result = res.data;
+        const result = await res.json();
         if (result['access_token']) {
             return result['access_token'];
         } else {
             throw new Error(`Can not find access_token: ${JSON.stringify(result)}`);
         }
     } else {
-        const result = res.data;
+        const result = await res.json();
         if (result['message']) {
             throw new Error(result['message']);
         } else {
@@ -193,14 +193,14 @@ async function driveId(token) {
         },
     });
     if (res.ok) {
-        const result = res.data;
+        const result = await res.json();
         if (result['default_drive_id']) {
             return result['default_drive_id'];
         } else {
             throw new Error(`Can not find default_drive_id: ${JSON.stringify(result)}`);
         }
     } else {
-        const result = res.data;
+        const result = await res.json();
         if (result['message']) {
             throw new Error(result['message']);
         } else {
@@ -215,7 +215,7 @@ async function createDir(token, drive_id) {
         headers: {
             Authorization: `Bearer ${token}`,
         },
-        body: Body.json({
+        body: JSON.stringify({
             drive_id,
             parent_file_id: 'root',
             name: 'pot-app',
@@ -224,14 +224,14 @@ async function createDir(token, drive_id) {
         }),
     });
     if (res.ok) {
-        const result = res.data;
+        const result = await res.json();
         if (result['file_id']) {
             return result['file_id'];
         } else {
             throw new Error(`Can not find file_id: ${JSON.stringify(result)}`);
         }
     } else {
-        const result = res.data;
+        const result = await res.json();
         if (result['message']) {
             throw new Error(result['message']);
         } else {
@@ -245,8 +245,9 @@ async function createFile(token, drive_id, dir_id, name) {
         method: 'POST',
         headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
         },
-        body: Body.json({
+        body: JSON.stringify({
             drive_id,
             parent_file_id: dir_id,
             name: name,
@@ -255,7 +256,7 @@ async function createFile(token, drive_id, dir_id, name) {
         }),
     });
     if (res.ok) {
-        const result = res.data;
+        const result = await res.json();
         if (result['file_id']) {
             const file_id = result['file_id'];
             const upload_id = result['upload_id'];
@@ -265,7 +266,7 @@ async function createFile(token, drive_id, dir_id, name) {
             throw new Error(`Get file_id Error: ${JSON.stringify(result)}`);
         }
     } else {
-        const result = res.data;
+        const result = await res.json();
         if (result['message']) {
             throw new Error(result['message']);
         } else {
@@ -279,21 +280,22 @@ async function getFileByPath(token, drive_id, name) {
         method: 'POST',
         headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
         },
-        body: Body.json({
+        body: JSON.stringify({
             drive_id,
             file_path: `/pot-app/${name}`,
         }),
     });
     if (res.ok) {
-        const result = res.data;
+        const result = await res.json();
         if (result['file_id']) {
             return result['file_id'];
         } else {
             throw new Error(`Can not find file_id: ${JSON.stringify(result)}`);
         }
     } else {
-        const result = res.data;
+        const result = await res.json();
         if (result['message']) {
             throw new Error(result['message']);
         } else {
@@ -307,21 +309,22 @@ async function getDownloadUrl(token, drive_id, file_id) {
         method: 'POST',
         headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
         },
-        body: Body.json({
+        body: JSON.stringify({
             drive_id,
             file_id,
         }),
     });
     if (res.ok) {
-        const result = res.data;
+        const result = await res.json();
         if (result['url']) {
             return result['url'];
         } else {
             throw new Error(`Can not find url: ${JSON.stringify(result)}`);
         }
     } else {
-        const result = res.data;
+        const result = await res.json();
         if (result['message']) {
             throw new Error(result['message']);
         } else {

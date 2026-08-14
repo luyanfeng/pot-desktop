@@ -1,4 +1,4 @@
-import { fetch, Body } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 
 export async function translate(text, from, to) {
     let plain_text = text.replaceAll('/', '@@');
@@ -8,7 +8,7 @@ export async function translate(text, from, to) {
     });
 
     if (res.ok) {
-        let result = res.data;
+        let result = await res.json();
         const { translation } = result;
         if (translation) {
             return translation.replaceAll('@@', '/');
@@ -16,7 +16,7 @@ export async function translate(text, from, to) {
             throw JSON.stringify(result.trim());
         }
     } else {
-        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+        throw `Http Request Error\nHttp Status: ${res.status}\n${await res.text()}`;
     }
 }
 

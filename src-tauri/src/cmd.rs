@@ -16,8 +16,8 @@ pub fn get_text(state: tauri::State<StringWrapper>) -> String {
 #[tauri::command]
 pub fn reload_store() {
     let state = APP.get().unwrap().state::<StoreWrapper>();
-    let mut store = state.0.lock().unwrap();
-    store.load().unwrap();
+    let store = state.0.lock().unwrap();
+    store.reload().unwrap();
 }
 
 #[tauri::command]
@@ -26,7 +26,7 @@ pub fn cut_image(left: u32, top: u32, width: u32, height: u32, app_handle: tauri
     use image::GenericImage;
     info!("Cut image: {}x{}+{}+{}", width, height, left, top);
     let mut app_cache_dir_path = cache_dir().expect("Get Cache Dir Failed");
-    app_cache_dir_path.push(&app_handle.config().tauri.bundle.identifier);
+    app_cache_dir_path.push(&app_handle.config().identifier);
     app_cache_dir_path.push("pot_screenshot.png");
     if !app_cache_dir_path.exists() {
         return;
@@ -56,7 +56,7 @@ pub fn get_base64(app_handle: tauri::AppHandle) -> String {
     use std::fs::File;
     use std::io::Read;
     let mut app_cache_dir_path = cache_dir().expect("Get Cache Dir Failed");
-    app_cache_dir_path.push(&app_handle.config().tauri.bundle.identifier);
+    app_cache_dir_path.push(&app_handle.config().identifier);
     app_cache_dir_path.push("pot_screenshot_cut.png");
     if !app_cache_dir_path.exists() {
         return "".to_string();
@@ -82,7 +82,7 @@ pub fn copy_img(app_handle: tauri::AppHandle, width: usize, height: usize) -> Re
     use std::borrow::Cow;
 
     let mut app_cache_dir_path = cache_dir().expect("Get Cache Dir Failed");
-    app_cache_dir_path.push(&app_handle.config().tauri.bundle.identifier);
+    app_cache_dir_path.push(&app_handle.config().identifier);
     app_cache_dir_path.push("pot_screenshot_cut.png");
     let data = ImageReader::open(app_cache_dir_path)?.decode()?;
 
@@ -163,7 +163,7 @@ pub fn install_plugin(path_list: Vec<String>) -> Result<i32, Error> {
         }
         let config_path = dirs::config_dir().unwrap();
         let config_path =
-            config_path.join(APP.get().unwrap().config().tauri.bundle.identifier.clone());
+            config_path.join(APP.get().unwrap().config().identifier.clone());
         let config_path = config_path.join("plugins");
         let config_path = config_path.join(plugin_type);
         let plugin_path = config_path.join(file_name);
@@ -187,7 +187,7 @@ pub fn run_binary(
     use std::process::Command;
 
     let config_path = dirs::config_dir().unwrap();
-    let config_path = config_path.join(APP.get().unwrap().config().tauri.bundle.identifier.clone());
+    let config_path = config_path.join(APP.get().unwrap().config().identifier.clone());
     let config_path = config_path.join("plugins");
     let config_path = config_path.join(plugin_type);
     let plugin_path = config_path.join(plugin_name);
@@ -216,7 +216,7 @@ pub fn font_list() -> Result<Vec<String>, Error> {
 }
 
 #[tauri::command]
-pub fn open_devtools(window: tauri::Window) {
+pub fn open_devtools(window: tauri::WebviewWindow) {
     if !window.is_devtools_open() {
         window.open_devtools();
     } else {

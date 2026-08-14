@@ -1,5 +1,5 @@
-import { readBinaryFile, BaseDirectory } from '@tauri-apps/api/fs';
-import { fetch, Body } from '@tauri-apps/api/http';
+import { readFile, BaseDirectory } from '@tauri-apps/plugin-fs';
+import { fetch } from '@tauri-apps/plugin-http';
 
 export async function recognize(base64, language, options = {}) {
     const { config } = options;
@@ -8,30 +8,27 @@ export async function recognize(base64, language, options = {}) {
 
     const url = 'https://server.simpletex.cn/api/latex_ocr/v2';
 
-    let file = await readBinaryFile('pot_screenshot_cut.png', { dir: BaseDirectory.AppCache });
+    let file = await readFile('pot_screenshot_cut.png', { baseDir: BaseDirectory.AppCache });
+
+    const formData = new FormData();
+    formData.append('file', new Blob([file]), 'pot_screenshot_cut.png');
 
     const res = await fetch(url, {
         method: 'POST',
         headers: {
             token,
-            'content-type': 'multipart/form-data',
         },
-        body: Body.form({
-            file: {
-                file: file,
-                fileName: 'pot_screenshot_cut.png',
-            },
-        }),
+        body: formData,
     });
     if (res.ok) {
-        let result = res.data;
+        let result = await res.json();
         if (result['res'] && result['res']['latex']) {
             return result['res']['latex'].trim();
         } else {
             throw JSON.stringify(result);
         }
     } else {
-        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(await res.text())}`;
     }
 }
 

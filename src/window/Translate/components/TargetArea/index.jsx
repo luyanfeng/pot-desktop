@@ -12,10 +12,10 @@ import {
     Tooltip,
 } from '@nextui-org/react';
 import { BiCollapseVertical, BiExpandVertical } from 'react-icons/bi';
-import { BaseDirectory, readTextFile } from '@tauri-apps/api/fs';
-import { sendNotification } from '@tauri-apps/api/notification';
+import { BaseDirectory, readTextFile } from '@tauri-apps/plugin-fs';
+import { sendNotification } from '@tauri-apps/plugin-notification';
 import React, { useEffect, useState, useRef } from 'react';
-import { writeText } from '@tauri-apps/api/clipboard';
+import { writeText } from '@tauri-apps/plugin-clipboard-manager';
 import PulseLoader from 'react-spinners/PulseLoader';
 import { TbTransformFilled } from 'react-icons/tb';
 import { HiOutlineVolumeUp } from 'react-icons/hi';
@@ -23,7 +23,7 @@ import { semanticColors } from '@nextui-org/theme';
 import toast, { Toaster } from 'react-hot-toast';
 import { MdContentCopy } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
-import Database from 'tauri-plugin-sql-api';
+import Database from '@tauri-apps/plugin-sql';
 import { GiCycle } from 'react-icons/gi';
 import { useTheme } from 'next-themes';
 import { useAtomValue } from 'jotai';
@@ -39,7 +39,7 @@ import { invoke_plugin } from '../../../../utils/invoke_plugin';
 import * as builtinServices from '../../../../services/translate';
 import * as builtinTtsServices from '../../../../services/tts';
 
-import { info, error as logError } from 'tauri-plugin-log-api';
+import { info, error as logError } from '@tauri-apps/plugin-log';
 import {
     INSTANCE_NAME_CONFIG_KEY,
     ServiceSourceType,
@@ -126,7 +126,9 @@ export default function TargetArea(props) {
     // todo: history panel use service instance key
     const addToHistory = async (text, source, target, serviceInstanceKey, result) => {
         const db = await Database.load('sqlite:history.db');
-
+        await db.execute(
+            'CREATE TABLE IF NOT EXISTS history(id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT NOT NULL,source TEXT NOT NULL,target TEXT NOT NULL,service TEXT NOT NULL, result TEXT NOT NULL,timestamp INTEGER NOT NULL)'
+        );
         await db
             .execute(
                 'INSERT into history (text, source, target, service, result, timestamp) VALUES ($1, $2, $3, $4, $5, $6)',
@@ -137,12 +139,7 @@ export default function TargetArea(props) {
                     db.close();
                 },
                 (e) => {
-                    db.execute(
-                        'CREATE TABLE history(id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT NOT NULL,source TEXT NOT NULL,target TEXT NOT NULL,service TEXT NOT NULL, result TEXT NOT NULL,timestamp INTEGER NOT NULL)'
-                    ).then(() => {
-                        db.close();
-                        addToHistory(text, source, target, serviceInstanceKey, result);
-                    });
+                    db.close();
                 }
             );
     };
@@ -330,7 +327,7 @@ export default function TargetArea(props) {
     useEffect(() => {
         if (ttsServiceList && getServiceSouceType(ttsServiceList[0]) === ServiceSourceType.PLUGIN) {
             readTextFile(`plugins/tts/${getServiceName(ttsServiceList[0])}/info.json`, {
-                dir: BaseDirectory.AppConfig,
+                baseDir: BaseDirectory.AppConfig,
             }).then((infoStr) => {
                 setTtsPluginInfo(JSON.parse(infoStr));
             });

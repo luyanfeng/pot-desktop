@@ -1,4 +1,4 @@
-import { fetch } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 
 export async function tts(text, lang, options = {}) {
     const { config } = options;
@@ -15,7 +15,8 @@ export async function tts(text, lang, options = {}) {
     const res = await fetch(`${requestPath}/api/v1/audio/${lang}/${encodeURIComponent(text)}`);
 
     if (res.ok) {
-        return res.data['audio'];
+        const result = await res.json();
+        return result['audio'];
     }
 }
 

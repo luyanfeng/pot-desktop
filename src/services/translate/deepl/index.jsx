@@ -1,4 +1,4 @@
-import { fetch, Body } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 
 export async function translate(text, from, to, options = {}) {
     const { config } = options;
@@ -43,29 +43,36 @@ async function translate_by_free(text, from, to) {
 
     let res = await fetch(url, {
         method: 'POST',
-        body: Body.text(body_str),
+        body: body_str,
         headers: { 'Content-Type': 'application/json' },
     });
 
     if (res.ok) {
-        let result = res.data;
+        let result = await res.json();
         if (result && result.result && result.result.texts) {
             return result.result.texts[0].text.trim();
         } else {
             throw JSON.stringify(result);
         }
     } else {
-        if (res.data.error) {
-            throw `Status Code: ${res.status}\n${res.data.error.message}`;
+        const data = await res.text();
+        let parsed;
+        try {
+            parsed = JSON.parse(data);
+        } catch {
+            parsed = null;
+        }
+        if (parsed && parsed.error) {
+            throw `Status Code: ${res.status}\n${parsed.error.message}`;
         } else {
-            throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+            throw `Http Request Error\nHttp Status: ${res.status}\n${data}`;
         }
     }
 }
 async function translate_by_deeplx(text, from, to, url) {
     let res = await fetch(url, {
         method: 'POST',
-        body: Body.json({
+        body: JSON.stringify({
             source_lang: from,
             target_lang: to,
             text: text,
@@ -73,14 +80,14 @@ async function translate_by_deeplx(text, from, to, url) {
     });
 
     if (res.ok) {
-        const result = res.data;
+        const result = await res.json();
         if (result['data']) {
             return result['data'];
         } else {
             throw JSON.stringify(result);
         }
     } else {
-        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(await res.text())}`;
     }
 }
 
@@ -106,22 +113,29 @@ async function translate_by_key(text, from, to, key) {
     }
     let res = await fetch(url, {
         method: 'POST',
-        body: Body.json(body),
+        body: JSON.stringify(body),
         headers: headers,
     });
 
     if (res.ok) {
-        const result = res.data;
+        const result = await res.json();
         if ((result.translations, result.translations[0])) {
             return result.translations[0].text.trim();
         } else {
             throw JSON.stringify(result);
         }
     } else {
-        if (res.data.error) {
-            throw `Status Code: ${res.status}\n${res.data.error.message}`;
+        const data = await res.text();
+        let parsed;
+        try {
+            parsed = JSON.parse(data);
+        } catch {
+            parsed = null;
+        }
+        if (parsed && parsed.error) {
+            throw `Status Code: ${res.status}\n${parsed.error.message}`;
         } else {
-            throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+            throw `Http Request Error\nHttp Status: ${res.status}\n${data}`;
         }
     }
 }

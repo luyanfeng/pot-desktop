@@ -1,4 +1,4 @@
-import { fetch, Body } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 import { Language } from './info';
 import { defaultRequestArguments } from './Config';
 
@@ -115,16 +115,16 @@ export async function translate(text, from, to, options) {
                 reader.releaseLock();
             }
         } else {
-            throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+            throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(await res.text())}`;
         }
     } else {
         let res = await fetch(apiUrl.href, {
             method: 'POST',
             headers: headers,
-            body: Body.json(body),
+            body: JSON.stringify(body),
         });
         if (res.ok) {
-            let result = res.data;
+            let result = await res.json();
             const { choices } = result;
             if (choices) {
                 let target = choices[0].message.content.trim();
@@ -143,7 +143,7 @@ export async function translate(text, from, to, options) {
                 throw JSON.stringify(result);
             }
         } else {
-            throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+            throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(await res.text())}`;
         }
     }
 }

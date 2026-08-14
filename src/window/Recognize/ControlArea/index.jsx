@@ -1,6 +1,6 @@
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Button } from '@nextui-org/react';
 import { atom, useAtom, useSetAtom, useAtomValue } from 'jotai';
-import { fetch, Body } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 import { useTranslation } from 'react-i18next';
 import { HiTranslate } from 'react-icons/hi';
 import { GiCycle } from 'react-icons/gi';
@@ -167,8 +167,7 @@ export default function ControlArea(props) {
                     if (text) {
                         void fetch(`http://127.0.0.1:${serverPort}/translate`, {
                             method: 'POST',
-                            body: Body.text(text),
-                            responseType: 2,
+                            body: text,
                         });
                     }
                 }}

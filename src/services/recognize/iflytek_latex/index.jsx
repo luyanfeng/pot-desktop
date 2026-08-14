@@ -1,4 +1,4 @@
-import { fetch } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 import hmacSHA256 from 'crypto-js/hmac-sha256';
 import hashSHA256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
@@ -41,13 +41,10 @@ export async function recognize(base64, language, options = {}) {
     const res = await fetch(url, {
         method: 'POST',
         headers,
-        body: {
-            type: 'Text',
-            payload: JSON.stringify(body),
-        },
+        body: JSON.stringify(body),
     });
     if (res.ok) {
-        let result = res.data;
+        let result = await res.json();
         if (result.data['region']) {
             let target = '';
             for (let i of result.data['region']) {
@@ -60,7 +57,7 @@ export async function recognize(base64, language, options = {}) {
             throw JSON.stringify(result);
         }
     } else {
-        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+        throw `Http Request Error\nHttp Status: ${res.status}\n${await res.text()}`;
     }
 }
 

@@ -21,11 +21,11 @@ export const useConfig = (key, defaultValue, options = {}) => {
 
     // 同步到State (Store -> State)
     const syncToState = useCallback((v) => {
-        if (v !== null) {
+        if (v !== null && v !== undefined) {
             setPropertyState(v);
         } else {
             store.get(key).then((v) => {
-                if (v === null) {
+                if (v === null || v === undefined) {
                     setPropertyState(defaultValue);
                     store.set(key, defaultValue);
                     store.save();

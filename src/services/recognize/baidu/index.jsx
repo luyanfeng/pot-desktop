@@ -1,45 +1,47 @@
-import { fetch, Body } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 
 export async function recognize(base64, language, options = {}) {
     const { config } = options;
 
     const { client_id, client_secret } = config;
 
-    const url = 'https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic';
-    const token_url = 'https://aip.baidubce.com/oauth/2.0/token';
-
-    const token_res = await fetch(token_url, {
-        method: 'POST',
-        query: {
+    const token_res = await fetch(
+        `https://aip.baidubce.com/oauth/2.0/token?${new URLSearchParams({
             grant_type: 'client_credentials',
             client_id,
             client_secret,
-        },
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
-    });
+        })}`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+        }
+    );
     if (token_res.ok) {
-        if (token_res.data.access_token) {
-            let token = token_res.data.access_token;
+        const token_data = await token_res.json();
+        if (token_data.access_token) {
+            let token = token_data.access_token;
 
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                query: {
+            const res = await fetch(
+                `https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?${new URLSearchParams({
                     access_token: token,
-                },
-                body: Body.form({
-                    language_type: language,
-                    detect_direction: 'false',
-                    image: base64,
-                }),
-            });
+                })}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        language_type: language,
+                        detect_direction: 'false',
+                        image: base64,
+                    }).toString(),
+                }
+            );
             if (res.ok) {
-                let result = res.data;
+                let result = await res.json();
                 if (result['words_result']) {
                     let target = '';
                     for (let i of result['words_result']) {
@@ -50,13 +52,13 @@ export async function recognize(base64, language, options = {}) {
                     throw JSON.stringify(result);
                 }
             } else {
-                throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+                throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(await res.text())}`;
             }
         } else {
             throw 'Get Access Token Failed!';
         }
     } else {
-        throw `Http Request Error\nHttp Status: ${token_res.status}\n${JSON.stringify(token_res.data)}`;
+        throw `Http Request Error\nHttp Status: ${token_res.status}\n${JSON.stringify(await token_res.text())}`;
     }
 }
 

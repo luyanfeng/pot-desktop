@@ -1,10 +1,10 @@
 import { appCacheDir, appConfigDir, join } from "@tauri-apps/api/path";
-import { readBinaryFile, readTextFile } from "@tauri-apps/api/fs";
-import { invoke } from "@tauri-apps/api/tauri";
-import Database from "tauri-plugin-sql-api";
-import { http } from "@tauri-apps/api";
+import { readFile, readTextFile } from "@tauri-apps/plugin-fs";
+import { invoke } from "@tauri-apps/api/core";
+import Database from "@tauri-apps/plugin-sql";
 import CryptoJS from "crypto-js";
 import { osType } from "./env";
+import * as http from "@tauri-apps/plugin-http"
 
 export async function invoke_plugin(pluginType, pluginName) {
     let configDir = await appConfigDir();
@@ -23,7 +23,8 @@ export async function invoke_plugin(pluginType, pluginName) {
     const utils = {
         tauriFetch: http.fetch,
         http,
-        readBinaryFile,
+        // readBinaryFile 在 Tauri v2 中更名为 readFile,保留旧名以兼容第三方插件
+        readBinaryFile: readFile,
         readTextFile,
         Database,
         CryptoJS,

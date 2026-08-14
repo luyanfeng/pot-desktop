@@ -1,4 +1,4 @@
-import { fetch, Body } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/plugin-http';
 
 export async function translate(text, from, to, options = {}) {
     const { config } = options;
@@ -12,7 +12,7 @@ export async function translate(text, from, to, options = {}) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: Body.json({
+        body: JSON.stringify({
             from: from,
             to: to,
             apikey: apikey,
@@ -22,14 +22,14 @@ export async function translate(text, from, to, options = {}) {
 
     // 返回翻译结果
     if (res.ok) {
-        let result = res.data;
+        let result = await res.json();
         if (result && result['tgt_text']) {
             return result['tgt_text'].trim();
         } else {
             throw JSON.stringify(result);
         }
     } else {
-        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(res.data)}`;
+        throw `Http Request Error\nHttp Status: ${res.status}\n${JSON.stringify(await res.text())}`;
     }
 }
 

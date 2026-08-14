@@ -1,0 +1,100 @@
+{
+  "identifier": "migrated",
+  "description": "permissions migrated from v1 allowlist",
+  "local": true,
+  "windows": [
+    "daemon",
+    "translate",
+    "screenshot",
+    "recognize",
+    "config",
+    "updater"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:default",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-close",
+    "core:window:allow-center",
+    "core:window:allow-set-focus",
+    "core:window:allow-set-size",
+    "core:window:allow-set-min-size",
+    "core:window:allow-set-position",
+    "core:window:allow-set-fullscreen",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-set-resizable",
+    "core:window:allow-set-decorations",
+    "core:window:allow-set-skip-taskbar",
+    "core:window:allow-maximize",
+    "core:window:allow-unmaximize",
+    "core:window:allow-minimize",
+    "core:window:allow-start-dragging",
+    "core:webview:default",
+    "core:path:default",
+    "core:event:default",
+    "core:app:default",
+    "core:resources:default",
+    "core:menu:default",
+    "core:tray:default",
+    "store:default",
+    "sql:default",
+    "sql:allow-load",
+    "sql:allow-execute",
+    "sql:allow-select",
+    "sql:allow-close",
+    "log:default",
+    "fs:default",
+    "fs:allow-watch",
+    "fs:allow-appconfig-read-recursive",
+    "fs:allow-appconfig-write-recursive",
+    "fs:allow-appdata-read-recursive",
+    "fs:allow-appdata-write-recursive",
+    "fs:allow-appcache-read-recursive",
+    "fs:allow-appcache-write-recursive",
+    "fs:allow-applog-read-recursive",
+    "fs:read-all",
+    {
+      "identifier": "fs:allow-exists",
+      "allow": [{ "path": "$APPCONFIG/**" }]
+    },
+    {
+      "identifier": "fs:allow-read-dir",
+      "allow": [{ "path": "$APPCONFIG/**" }]
+    },
+    {
+      "identifier": "fs:allow-read-text-file",
+      "allow": [{ "path": "$APPCONFIG/**" }]
+    },
+    {
+      "identifier": "fs:allow-read-file",
+      "allow": [{ "path": "$APPCONFIG/**" }]
+    },
+    {
+      "identifier": "fs:allow-remove",
+      "allow": [{ "path": "$APPCONFIG/**" }]
+    },
+    {
+      "identifier": "fs:scope",
+      "allow": [{ "path": "$APPCONFIG" }, { "path": "$APPCONFIG/**" }]
+    },
+    {
+      "identifier": "http:default",
+      "allow": [
+        { "url": "*://*:*" }
+      ]
+    },
+    "shell:default",
+    "dialog:default",
+    "clipboard-manager:default",
+    "notification:default",
+    "global-shortcut:default",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister",
+    "global-shortcut:allow-unregister-all",
+    "global-shortcut:allow-is-registered",
+    "os:default",
+    "updater:default",
+    "autostart:default"
+  ]
+}

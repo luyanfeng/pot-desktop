@@ -1,18 +1,14 @@
 import { Code, Card, CardBody, Button, Progress, Skeleton } from '@nextui-org/react';
-import { checkUpdate, installUpdate } from '@tauri-apps/api/updater';
-import React, { useEffect, useState } from 'react';
-import { appWindow } from '@tauri-apps/api/window';
-import { relaunch } from '@tauri-apps/api/process';
+import { check } from '@tauri-apps/plugin-updater';
+import React, { useEffect, useRef, useState } from 'react';
+import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
+import { relaunch } from '@tauri-apps/plugin-process';
 import toast, { Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { listen } from '@tauri-apps/api/event';
 import ReactMarkdown from 'react-markdown';
-
 import { useConfig, useToastStyle } from '../../hooks';
 import { osType } from '../../utils/env';
-
-let unlisten = 0;
-let eventId = 0;
+const appWindow = getCurrentWebviewWindow()
 
 export default function Updater() {
     const [transparent] = useConfig('transparent', true);
@@ -21,15 +17,17 @@ export default function Updater() {
     const [body, setBody] = useState('');
     const { t } = useTranslation();
     const toastStyle = useToastStyle();
+    const updateRef = useRef(null);
 
     useEffect(() => {
         if (appWindow.label === 'updater') {
             appWindow.show();
         }
-        checkUpdate().then(
+        check().then(
             (update) => {
-                if (update.shouldUpdate) {
-                    setBody(update.manifest.body);
+                if (update) {
+                    updateRef.current = update;
+                    setBody(update.body);
                 } else {
                     setBody(t('updater.latest'));
                 }
@@ -39,19 +37,6 @@ export default function Updater() {
                 toast.error(e.toString(), { style: toastStyle });
             }
         );
-        if (unlisten === 0) {
-            unlisten = listen('tauri://update-download-progress', (e) => {
-                if (eventId === 0) {
-                    eventId = e.id;
-                }
-                if (e.id === eventId) {
-                    setTotal(e.payload.contentLength);
-                    setDownloaded((a) => {
-                        return a + e.payload.chunkLength;
-                    });
-                }
-            });
-        }
     }, []);
 
     return (
@@ -156,7 +141,20 @@ export default function Updater() {
                     isDisabled={downloaded !== 0}
                     color='primary'
                     onPress={() => {
-                        installUpdate().then(
+                        if (!updateRef.current) {
+                            toast.error(t('updater.latest'), { style: toastStyle });
+                            return;
+                        }
+                        updateRef.current.downloadAndInstall(
+                            (event) => {
+                                if (event.event === 'DownloadProgress') {
+                                    setTotal(event.data.contentLength || 0);
+                                    setDownloaded((a) => {
+                                        return a + (event.data.chunkLength || 0);
+                                    });
+                                }
+                            }
+                        ).then(
                             () => {
                                 toast.success(t('updater.installed'), { style: toastStyle, duration: 10000 });
                                 relaunch();
