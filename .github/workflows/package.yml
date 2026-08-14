@@ -22,16 +22,19 @@ jobs:
                   sudo apt-get install -y git
             - id: outputstep
               run: |
-                  echo "VERSION=$(git describe --tags | sed 's/-[0-9]*-.*//g')" >> "$GITHUB_OUTPUT"
+                  V=$(git describe --tags 2>/dev/null | sed 's/-[0-9]*-.*//g')
+                  echo "VERSION=${V:-4.0.0-ubuntu2404}" >> "$GITHUB_OUTPUT"
             - name: Change Version for Windows
               run: |
-                  sed -i "s/\"version\":.*/\"version\": \"$(git describe --tags | sed 's/-[0-9]*-.*//g')\",/g" package.json
+                  V=$(git describe --tags 2>/dev/null | sed 's/-[0-9]*-.*//g')
+                  VERSION=${V:-4.0.0-ubuntu2404}
+                  sed -i "s/\"version\":.*/\"version\": \"$VERSION\",/g" package.json
 
-                  sed -i "s/\"version\":.*/\"version\": \"$(git describe --tags | sed 's/-[0-9]*-.*//g')\",/g" src-tauri/tauri.conf.json
+                  sed -i "s/\"version\":.*/\"version\": \"$VERSION\",/g" src-tauri/tauri.conf.json
 
-                  sed -i "s/^version = .*/version = \"$(git describe --tags | sed 's/-[0-9]*-.*//g')\"/g" src-tauri/Cargo.toml
+                  sed -i "s/^version = .*/version = \"$VERSION\"/g" src-tauri/Cargo.toml
 
-                  echo $(git describe --tags | sed 's/-[0-9]*-.*//g')
+                  echo $VERSION
 
             - name: Upload Artifacts for Windows
               uses: actions/upload-artifact@v4
@@ -392,8 +395,9 @@ jobs:
                   sudo apt-get install -y git curl
             - name: Get Tag Name
               run: |
-                  echo "VERSION=$(git describe --tags | sed 's/-[0-9]*-.*//g')" >> $GITHUB_ENV
-                  echo "VERSION=$(git describe --tags | sed 's/-[0-9]*-.*//g')"
+                  V=$(git describe --tags 2>/dev/null | sed 's/-[0-9]*-.*//g')
+                  echo "VERSION=${V:-4.0.0-ubuntu2404}" >> $GITHUB_ENV
+                  echo "VERSION=${V:-4.0.0-ubuntu2404}"
             - name: Setup pnpm
               uses: pnpm/action-setup@v4
               with:
