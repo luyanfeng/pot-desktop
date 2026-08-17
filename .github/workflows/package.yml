@@ -120,8 +120,8 @@ jobs:
               run: pnpm prettier --write .
             - name: Build and Package
               run: |
-                  export TAURI_PRIVATE_KEY="${{ secrets.TAURI_PRIVATE_KEY }}"
-                  export TAURI_KEY_PASSWORD="${{ secrets.TAURI_KEY_PASSWORD }}"
+                  export TAURI_SIGNING_PRIVATE_KEY="${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}"
+                  export TAURI_SIGNING_PRIVATE_KEY_PASSWORD="${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}"
                   export APPLE_SIGNING_IDENTITY="${{ secrets.APPLE_SIGNING_IDENTITY }}"
                   export APPLE_CERTIFICATE="${{ secrets.APPLE_CERTIFICATE }}"
                   export APPLE_CERTIFICATE_PASSWORD="${{ secrets.APPLE_CERTIFICATE_PASSWORD }}"
@@ -212,8 +212,8 @@ jobs:
               run: pnpm prettier --write .
             - name: Build and Package
               run: |
-                  $env:TAURI_PRIVATE_KEY="${{ secrets.TAURI_PRIVATE_KEY }}"
-                  $env:TAURI_KEY_PASSWORD="${{ secrets.TAURI_KEY_PASSWORD }}"
+                  $env:TAURI_SIGNING_PRIVATE_KEY="${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}"
+                  $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD="${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}"
                   pnpm tauri build -b nsis,updater --target ${{ matrix.target }}
             - name: Upload Artifacts
               uses: actions/upload-artifact@v4
@@ -280,8 +280,8 @@ jobs:
                   Rename-Item .\src-tauri\webview.${{ matrix.arch }}.json tauri.windows.conf.json
             - name: Build and Package
               run: |
-                  $env:TAURI_PRIVATE_KEY="${{ secrets.TAURI_PRIVATE_KEY }}"
-                  $env:TAURI_KEY_PASSWORD="${{ secrets.TAURI_KEY_PASSWORD }}"
+                  $env:TAURI_SIGNING_PRIVATE_KEY="${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}"
+                  $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD="${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}"
                   pnpm tauri build -b nsis,updater --target ${{ matrix.target }}
                   Rename-Item .\src-tauri\target\${{ matrix.target }}\release\bundle\nsis\pot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}-setup.exe pot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}_fix_webview2_runtime-setup.exe
                   Rename-Item .\src-tauri\target\${{ matrix.target }}\release\bundle\nsis\pot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}-setup.nsis.zip pot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}_fix_webview2_runtime-setup.nsis.zip
@@ -334,8 +334,8 @@ jobs:
             - name: Build for Linux
               uses: ./.github/actions/build-for-linux
               env:
-                  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-                  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+                  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+                  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
               with:
                   target: ${{ matrix.target }}
                   toolchain: ${{ matrix.toolchain }}
