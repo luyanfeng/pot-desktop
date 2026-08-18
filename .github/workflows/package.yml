@@ -23,11 +23,11 @@ jobs:
             - id: outputstep
               run: |
                   V=$(git describe --tags 2>/dev/null | sed 's/-[0-9]*-.*//g')
-                  echo "VERSION=${V:-4.0.0-ubuntu2404}" >> "$GITHUB_OUTPUT"
+                  echo "VERSION=${V:-4.0.0}" >> "$GITHUB_OUTPUT"
             - name: Change Version for Windows
               run: |
                   V=$(git describe --tags 2>/dev/null | sed 's/-[0-9]*-.*//g')
-                  VERSION=${V:-4.0.0-ubuntu2404}
+                  VERSION=${V:-4.0.0}
                   sed -i "s/\"version\":.*/\"version\": \"$VERSION\",/g" package.json
 
                   sed -i "s/\"version\":.*/\"version\": \"$VERSION\",/g" src-tauri/tauri.conf.json
@@ -140,13 +140,13 @@ jobs:
             - name: Change File Name
               if: matrix.target == 'aarch64-apple-darwin'
               run: |
-                  sudo mv src-tauri/target/aarch64-apple-darwin/release/bundle/macos/pot.app.tar.gz src-tauri/target/aarch64-apple-darwin/release/bundle/macos/pot_${{needs.change-version.outputs.version}}_aarch64.app.tar.gz
-                  sudo mv src-tauri/target/aarch64-apple-darwin/release/bundle/macos/pot.app.tar.gz.sig src-tauri/target/aarch64-apple-darwin/release/bundle/macos/pot_${{needs.change-version.outputs.version}}_aarch64.app.tar.gz.sig
+                  sudo mv src-tauri/target/aarch64-apple-darwin/release/bundle/macos/newpot.app.tar.gz src-tauri/target/aarch64-apple-darwin/release/bundle/macos/newpot_${{needs.change-version.outputs.version}}_aarch64.app.tar.gz
+                  sudo mv src-tauri/target/aarch64-apple-darwin/release/bundle/macos/newpot.app.tar.gz.sig src-tauri/target/aarch64-apple-darwin/release/bundle/macos/newpot_${{needs.change-version.outputs.version}}_aarch64.app.tar.gz.sig
             - name: Change File Name
               if: matrix.target == 'x86_64-apple-darwin'
               run: |
-                  sudo mv src-tauri/target/x86_64-apple-darwin/release/bundle/macos/pot.app.tar.gz src-tauri/target/x86_64-apple-darwin/release/bundle/macos/pot_${{needs.change-version.outputs.version}}_x64.app.tar.gz
-                  sudo mv src-tauri/target/x86_64-apple-darwin/release/bundle/macos/pot.app.tar.gz.sig src-tauri/target/x86_64-apple-darwin/release/bundle/macos/pot_${{needs.change-version.outputs.version}}_x64.app.tar.gz.sig
+                  sudo mv src-tauri/target/x86_64-apple-darwin/release/bundle/macos/newpot.app.tar.gz src-tauri/target/x86_64-apple-darwin/release/bundle/macos/newpot_${{needs.change-version.outputs.version}}_x64.app.tar.gz
+                  sudo mv src-tauri/target/x86_64-apple-darwin/release/bundle/macos/newpot.app.tar.gz.sig src-tauri/target/x86_64-apple-darwin/release/bundle/macos/newpot_${{needs.change-version.outputs.version}}_x64.app.tar.gz.sig
             - name: Upload Artifacts
               uses: actions/upload-artifact@v4
               with:
@@ -287,9 +287,9 @@ jobs:
                   $env:TAURI_SIGNING_PRIVATE_KEY="${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}"
                   $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD="${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}"
                   pnpm tauri build -b nsis,updater --target ${{ matrix.target }}
-                  Rename-Item .\src-tauri\target\${{ matrix.target }}\release\bundle\nsis\pot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}-setup.exe pot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}_fix_webview2_runtime-setup.exe
-                  Rename-Item .\src-tauri\target\${{ matrix.target }}\release\bundle\nsis\pot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}-setup.nsis.zip pot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}_fix_webview2_runtime-setup.nsis.zip
-                  Rename-Item .\src-tauri\target\${{ matrix.target }}\release\bundle\nsis\pot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}-setup.nsis.zip.sig pot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}_fix_webview2_runtime-setup.nsis.zip.sig
+                  Rename-Item .\src-tauri\target\${{ matrix.target }}\release\bundle\nsis\newpot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}-setup.exe newpot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}_fix_webview2_runtime-setup.exe
+                  Rename-Item .\src-tauri\target\${{ matrix.target }}\release\bundle\nsis\newpot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}-setup.nsis.zip newpot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}_fix_webview2_runtime-setup.nsis.zip
+                  Rename-Item .\src-tauri\target\${{ matrix.target }}\release\bundle\nsis\newpot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}-setup.nsis.zip.sig newpot_${{needs.change-version.outputs.version}}_${{ matrix.arch }}_fix_webview2_runtime-setup.nsis.zip.sig
             - name: Upload Artifacts
               uses: actions/upload-artifact@v4
               with:
@@ -385,8 +385,8 @@ jobs:
             - name: Get Tag Name
               run: |
                   V=$(git describe --tags 2>/dev/null | sed 's/-[0-9]*-.*//g')
-                  echo "VERSION=${V:-4.0.0-ubuntu2404}" >> $GITHUB_ENV
-                  echo "VERSION=${V:-4.0.0-ubuntu2404}"
+                  echo "VERSION=${V:-4.0.0}" >> $GITHUB_ENV
+                  echo "VERSION=${V:-4.0.0}"
             - name: Setup pnpm
               uses: pnpm/action-setup@v4
               with:
@@ -403,7 +403,7 @@ jobs:
               uses: softprops/action-gh-release@v1
               with:
                   body: ${{env.VERSION}}
-                  tag_name: updater
+                  tag_name: ${{ env.VERSION }}
                   token: ${{ secrets.GITHUB_TOKEN }}
                   files: |
                       update.json

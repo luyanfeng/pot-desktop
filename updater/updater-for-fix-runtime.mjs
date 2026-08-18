@@ -19,12 +19,12 @@ async function resolveUpdater() {
     let version = await getVersion(TOKEN);
     let changelog = await getChangeLog(TOKEN);
 
-    const windows_x86_64 = downloadUrl(`${version}/pot_${version}_x64_fix_webview2_runtime-setup.nsis.zip`);
-    const windows_x86_64_sig = await getSignature(`${REPO_URL}/releases/download/${version}/pot_${version}_x64_fix_webview2_runtime-setup.nsis.zip.sig`);
-    const windows_i686 = downloadUrl(`${version}/pot_${version}_x86_fix_webview2_runtime-setup.nsis.zip`);
-    const windows_i686_sig = await getSignature(`${REPO_URL}/releases/download/${version}/pot_${version}_x86_fix_webview2_runtime-setup.nsis.zip.sig`);
-    const windows_aarch64 = downloadUrl(`${version}/pot_${version}_arm64_fix_webview2_runtime-setup.nsis.zip`);
-    const windows_aarch64_sig = await getSignature(`${REPO_URL}/releases/download/${version}/pot_${version}_arm64_fix_webview2_runtime-setup.nsis.zip.sig`);
+    const windows_x86_64 = downloadUrl(`${version}/newpot_${version}_x64_fix_webview2_runtime-setup.nsis.zip`);
+    const windows_x86_64_sig = await getSignature(`${REPO_URL}/releases/download/${version}/newpot_${version}_x64_fix_webview2_runtime-setup.nsis.zip.sig`);
+    const windows_i686 = downloadUrl(`${version}/newpot_${version}_x86_fix_webview2_runtime-setup.nsis.zip`);
+    const windows_i686_sig = await getSignature(`${REPO_URL}/releases/download/${version}/newpot_${version}_x86_fix_webview2_runtime-setup.nsis.zip.sig`);
+    const windows_aarch64 = downloadUrl(`${version}/newpot_${version}_arm64_fix_webview2_runtime-setup.nsis.zip`);
+    const windows_aarch64_sig = await getSignature(`${REPO_URL}/releases/download/${version}/newpot_${version}_arm64_fix_webview2_runtime-setup.nsis.zip.sig`);
 
     let updateData = {
         name: version,
