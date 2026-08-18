@@ -31,7 +31,6 @@ use tauri::Manager;
 use tauri_plugin_log::{Target, TargetKind};
 use tauri_plugin_notification::NotificationExt;
 use tray::*;
-use updater::check_update;
 use window::config_window;
 use window::updater_window;
 
@@ -136,8 +135,6 @@ fn main() {
                 }
                 None => {}
             }
-            // Check Update
-            check_update(app.handle().clone());
             if let Some(engine) = get("translate_detect_engine") {
                 if engine.as_str().unwrap() == "local" {
                     init_lang_detect();
