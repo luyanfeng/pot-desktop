@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import fs from 'fs';
 
 // GitHub 仓库(集中配置,替换仓库时只需改这里)
-const REPO = 'luyanfeng/pot-desktop';
+const REPO = 'luyanfeng/newpot';
 const REPO_URL = `https://github.com/${REPO}`;
 const REPO_API = `https://api.github.com/repos/${REPO}`;
 // 发布下载 CDN 前缀(如 dl.pot-app.com 加速镜像;留空则直连 GitHub)
