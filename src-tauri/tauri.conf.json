@@ -50,12 +50,12 @@
   },
   "productName": "newpot",
   "mainBinaryName": "newpot",
-  "version": "4.0.0",
+  "version": "4.0.2",
   "identifier": "com.newpot.desktop",
   "plugins": {
     "updater": {
       "endpoints": [
-        "https://github.com/luyanfeng/newpot/releases/download/4.0.0/update.json"
+        "https://github.com/luyanfeng/newpot/releases/download/4.0.2/update.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRFRTNGQTE0QUIyOUY1MTkKUldRWjlTbXJGUHJqVG5XVjlqSEJiVXZkcjVoZDE3Z1ZUOEp1WTRJTEVQNk5WZE9CbFEyczU0bW8K"
     }

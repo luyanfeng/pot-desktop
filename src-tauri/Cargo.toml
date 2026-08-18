@@ -1,6 +1,6 @@
 [package]
 name = "newpot"
-version = "4.0.0"
+version = "4.0.2"
 description = "Pot App"
 authors = ["newpot"]
 license = "GPL-3.0-only"
