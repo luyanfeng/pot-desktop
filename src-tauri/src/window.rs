@@ -9,6 +9,10 @@ use tauri::Manager;
 use tauri::Monitor;
 use tauri::WebviewWindow;
 use tauri::WebviewWindowBuilder;
+#[cfg(target_os = "macos")]
+use std::fs;
+#[cfg(target_os = "macos")]
+use dirs::cache_dir;
 
 // Get daemon window instance
 fn get_daemon_window() -> WebviewWindow {

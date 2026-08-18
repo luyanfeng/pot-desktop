@@ -63,17 +63,20 @@ pub fn system_ocr(app_handle: tauri::AppHandle, lang: &str) -> Result<String, St
 #[tauri::command(async)]
 #[cfg(target_os = "macos")]
 pub fn system_ocr(app_handle: tauri::AppHandle, lang: &str) -> Result<String, String> {
+    use tauri::Manager;
     let mut app_cache_dir_path = cache_dir().expect("Get Cache Dir Failed");
     app_cache_dir_path.push(&app_handle.config().identifier);
     app_cache_dir_path.push("pot_screenshot_cut.png");
 
     let arch = std::env::consts::ARCH;
     let bin_path = match app_handle
-        .path_resolver()
-        .resolve_resource(format!("resources/ocr-{arch}-apple-darwin"))
-    {
-        Some(v) => v,
-        None => return Err("Failed to resolve ocr binary".to_string()),
+        .path()
+        .resolve(
+            format!("resources/ocr-{arch}-apple-darwin"),
+            tauri::BaseDirectory::Resource,
+        ) {
+        Ok(v) => v,
+        Err(_) => return Err("Failed to resolve ocr binary".to_string()),
     };
 
     match std::process::Command::new("chmod")
