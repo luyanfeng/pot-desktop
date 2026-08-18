@@ -2,7 +2,7 @@
 name = "newpot"
 version = "4.0.0"
 description = "Pot App"
-authors = ["pot-app"]
+authors = ["newpot"]
 license = "GPL-3.0-only"
 repository = "https://github.com/luyanfeng/pot-desktop"
 edition = "2021"
