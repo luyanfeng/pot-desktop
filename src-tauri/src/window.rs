@@ -9,8 +9,6 @@ use tauri::Manager;
 use tauri::Monitor;
 use tauri::WebviewWindow;
 use tauri::WebviewWindowBuilder;
-#[cfg(any(target_os = "macos", target_os = "windows"))]
-use window_shadows::set_shadow;
 
 // Get daemon window instance
 fn get_daemon_window() -> WebviewWindow {
@@ -88,7 +86,8 @@ fn build_window(label: &str, title: &str) -> (WebviewWindow, bool) {
             .additional_browser_args("--disable-web-security")
             .focused(true)
             .title(title)
-            .visible(false);
+            .visible(false)
+            .shadow(true);
 
             #[cfg(target_os = "macos")]
             {
@@ -102,10 +101,6 @@ fn build_window(label: &str, title: &str) -> (WebviewWindow, bool) {
             }
             let window = builder.build().unwrap();
 
-            if label != "screenshot" {
-                #[cfg(not(target_os = "linux"))]
-                set_shadow(&window, true).unwrap_or_default();
-            }
             let _ = window.current_monitor();
             (window, false)
         }
