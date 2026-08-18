@@ -73,7 +73,7 @@ pub fn system_ocr(app_handle: tauri::AppHandle, lang: &str) -> Result<String, St
         .path()
         .resolve(
             format!("resources/ocr-{arch}-apple-darwin"),
-            tauri::BaseDirectory::Resource,
+            tauri::path::BaseDirectory::Resource,
         ) {
         Ok(v) => v,
         Err(_) => return Err("Failed to resolve ocr binary".to_string()),
