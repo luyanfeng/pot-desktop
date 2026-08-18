@@ -52,8 +52,8 @@ export default function Screenshot() {
                 style={{
                     top: Math.min(mouseDownY, mouseMoveY),
                     left: Math.min(mouseDownX, mouseMoveX),
-                    bottom: screen.height - Math.max(mouseDownY, mouseMoveY),
-                    right: screen.width - Math.max(mouseDownX, mouseMoveX),
+                    bottom: window.innerHeight - Math.max(mouseDownY, mouseMoveY),
+                    right: window.innerWidth - Math.max(mouseDownX, mouseMoveX),
                 }}
             />
             <div
@@ -79,11 +79,16 @@ export default function Screenshot() {
                     setIsDown(false);
                     setIsMoved(false);
                     const imgWidth = imgRef.current.naturalWidth;
-                    const dpi = imgWidth / screen.width;
-                    const left = Math.floor(Math.min(mouseDownX, e.clientX) * dpi);
-                    const top = Math.floor(Math.min(mouseDownY, e.clientY) * dpi);
-                    const right = Math.floor(Math.max(mouseDownX, e.clientX) * dpi);
-                    const bottom = Math.floor(Math.max(mouseDownY, e.clientY) * dpi);
+                    const imgHeight = imgRef.current.naturalHeight;
+                    // clientX/clientY 是 CSS 逻辑坐标,截图 PNG 是物理尺寸。
+                    // 窗口 CSS 视口宽度=innerWidth,物理像素 = clientX × (imgWidth / innerWidth)
+                    // 相比 screen.width,innerWidth 反映窗口实际 CSS 尺寸,全屏时更准确
+                    const dpiX = imgWidth / (window.innerWidth || screen.width);
+                    const dpiY = imgHeight / (window.innerHeight || screen.height);
+                    const left = Math.floor(Math.min(mouseDownX, e.clientX) * dpiX);
+                    const top = Math.floor(Math.min(mouseDownY, e.clientY) * dpiY);
+                    const right = Math.floor(Math.max(mouseDownX, e.clientX) * dpiX);
+                    const bottom = Math.floor(Math.max(mouseDownY, e.clientY) * dpiY);
                     const width = right - left;
                     const height = bottom - top;
                     if (width <= 0 || height <= 0) {
