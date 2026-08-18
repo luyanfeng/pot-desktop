@@ -24,9 +24,11 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 
 # ---------- 2. 确定版本号 ----------
-CURRENT_VERSION=$(grep '"version"' "$PKG" | head -1 | sed 's/.*: *"\([0-9.]*\)".*/\1/')
-echo "当前版本: $CURRENT_VERSION"
+# 以最新 tag 为基准(避免本地文件版本与已发布 tag 不一致)
+LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+echo "最新 tag: $LATEST_TAG"
 
+CURRENT_VERSION=$LATEST_TAG
 if [ -z "$1" ]; then
     # 自动递增 patch:4.0.1 -> 4.0.2
     NEW_VERSION=$(echo "$CURRENT_VERSION" | awk -F. '{$3=$3+1; printf "%d.%d.%d", $1, $2, $3}')
@@ -49,9 +51,12 @@ fi
 
 # ---------- 4. 更新三处版本号 ----------
 echo "更新版本号..."
-sed -i "s/\"version\": *\"$CURRENT_VERSION\"/\"version\": \"$NEW_VERSION\"/" "$PKG"
-sed -i "s/\"version\": *\"$CURRENT_VERSION\"/\"version\": \"$NEW_VERSION\"/" "$CONF"
-sed -i "s/^version = \"$CURRENT_VERSION\"/version = \"$NEW_VERSION\"/" "$CARGO"
+# 直接替换为任意版本号(兼容文件版本与最新 tag 不一致的情况)
+sed -i "s/\"version\": *\"[0-9.]*\"/\"version\": \"$NEW_VERSION\"/" "$PKG"
+sed -i "s/\"version\": *\"[0-9.]*\"/\"version\": \"$NEW_VERSION\"/" "$CONF"
+sed -i "s/^version = \"[0-9.]*\"/version = \"$NEW_VERSION\"/" "$CARGO"
+# 同步 updater endpoint 中的版本号(releases/download/{version}/update.json)
+sed -i "s|releases/download/[0-9.]*/update.json|releases/download/$NEW_VERSION/update.json|" "$CONF"
 
 echo "验证更新:"
 grep '"version"' "$PKG" | head -1
